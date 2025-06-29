@@ -1,0 +1,20 @@
+﻿@page "/logout"
+@attribute [Authorize]                  
+@inject SmallRestaurant.Data.Services.AuthService AuthService
+@inject NavigationManager Nav
+
+<h3>Log out from your account</h3>
+<p>Are you sure?</p>
+
+<button class="btn btn-danger" @onclick="HandleLogout">
+  Logout
+</button>
+
+@code {
+  private async Task HandleLogout()
+  {
+    await AuthService.LogoutAsync();
+    // Повернути на головну після логауту
+    Nav.NavigateTo("/", forceLoad: true);
+  }
+}

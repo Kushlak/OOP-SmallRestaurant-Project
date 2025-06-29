@@ -1,0 +1,76 @@
+﻿@page "/addresses/new"
+@page "/addresses/edit/{Id:guid}"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAddressService             AddressService
+@inject AuthenticationStateProvider AuthProv
+@inject NavigationManager           Nav
+
+<h3>@(IsEdit ? "Edit Address" : "New Address")</h3>
+
+<EditForm Model="model" OnValidSubmit="Save">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
+
+  <!-- Поля вводу -->
+  <InputText @bind-Value="model.Street"
+             placeholder="Street"
+             class="form-control mb-2" />
+
+  <InputText @bind-Value="model.City"
+             placeholder="City"
+             class="form-control mb-2" />
+
+  <InputText @bind-Value="model.PostalCode"
+             placeholder="Postal Code"
+             class="form-control mb-2" />
+
+  <div class="form-check mb-3">
+    <InputCheckbox @bind-Value="model.IsDefault"
+                   class="form-check-input" />
+    <label class="form-check-label">Default address</label>
+  </div>
+
+  <!-- кнопки збереження/скасування -->
+  <button type="submit" class="btn btn-primary me-2">Save</button>
+  <button type="button" class="btn btn-secondary"
+          @onclick='() => Nav.NavigateTo("/addresses")'>
+    Cancel
+  </button>
+</EditForm>
+
+@code {
+  [Parameter] public Guid? Id { get; set; }
+  private Address model = new();
+  private bool    IsEdit => Id.HasValue;
+
+  protected override async Task OnInitializedAsync()
+  {
+    // Спочатку отримуємо поточного користувача
+    var auth = await AuthProv.GetAuthenticationStateAsync();
+    model.UserId = auth.User.Identity?.Name!;
+
+    if (IsEdit)
+    {
+      var existing = await AddressService.GetByIdAsync(Id!.Value);
+      if (existing != null)
+      {
+        model = existing;
+        // UserId уже встановлений із БД
+      }
+      else
+      {
+        Nav.NavigateTo("/addresses");
+      }
+    }
+  }
+
+  private async Task Save()
+  {
+    if (IsEdit)
+      await AddressService.UpdateAsync(model);
+    else
+      await AddressService.CreateAsync(model);
+
+    Nav.NavigateTo("/addresses");
+  }
+}

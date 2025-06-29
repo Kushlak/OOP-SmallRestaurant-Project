@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@using SmallRestaurant.Data.Services
+@inject AuthService                AuthService
+@inject NavigationManager          Nav
+@inject IOrderService              OrderService
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">SmallRestaurant</a>
+    <div class="" id="navMenu" style="display: flex; width: 100%; justify-content: space-between">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Home</NavLink>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="dishes">Menu</NavLink>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="orders">Orders</NavLink>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="cart">
+            Cart @if (_cartCount > 0) { <span class="badge bg-secondary ms-1">@_cartCount</span> }
+          </NavLink>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <AuthorizeView>
+          <Authorized>
+            <li class="nav-item">
+              <NavLink class="nav-link" href="logout">Logout</NavLink>
+            </li>
+          </Authorized>
+          <NotAuthorized>
+            <li class="nav-item">
+              <NavLink class="nav-link" href="login">Login</NavLink>
+            </li>
+            <li class="nav-item">
+              <NavLink class="nav-link" href="register">Register</NavLink>
+            </li>
+          </NotAuthorized>
+        </AuthorizeView>
+        <AuthorizeView>
+          <Authorized>
+            <li class="nav-item">
+              <NavLink class="nav-link" href="addresses">My Addresses</NavLink>
+            </li>
+          </Authorized>
+        </AuthorizeView>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+@code {
+  private int _cartCount;
+  
+  
+  protected override async Task OnInitializedAsync()
+  {
+    var items = await OrderService.GetCartItemsAsync();
+    _cartCount = items.Sum(i => i.Quantity);
+  }
+  
+  }
+

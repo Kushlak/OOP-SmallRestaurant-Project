@@ -1,0 +1,41 @@
+﻿@page "/dishes/{Id:guid}"
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IDishService         DishService
+@inject IOrderService        OrderService
+@inject NavigationManager    Nav
+@inject IJSRuntime           JSRuntime
+
+[CascadingAuthenticationState]
+<h2>@_dish?.Name</h2>
+<p>@_dish?.Description</p>
+<p class="fw-bold">@_dish?.Price.ToString("C")</p>
+
+<button class="btn btn-success me-2" @onclick="AddToCart">Add to Cart</button>
+<button class="btn btn-secondary" @onclick="GoBack">Back to Menu</button>
+
+@code {
+  [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; }
+  [Parameter]           public Guid Id { get; set; }
+  private Dish?         _dish;
+
+  protected override async Task OnInitializedAsync()
+  {
+    _dish = await DishService.GetByIdAsync(Id);
+  }
+
+  private async Task AddToCart()
+  {
+    var auth = await AuthStateTask;
+    if (!auth.User.Identity?.IsAuthenticated ?? true)
+    {
+      Nav.NavigateTo("/login?redirected=dishes", true);
+      return;
+    }
+
+    await OrderService.AddToCartAsync(_dish!);
+    await JSRuntime.InvokeVoidAsync("alert", $"{_dish!.Name} added to cart!");
+  }
+
+  private void GoBack() => Nav.NavigateTo("/dishes");
+}

@@ -1,0 +1,49 @@
+﻿@page "/orders"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IOrderService               OrderService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager           Nav
+
+<h2>Your Orders</h2>
+
+@if (!_loaded)
+{
+  <p><em>Loading…</em></p>
+}
+else if (!_orders.Any())
+{
+  <div class="alert alert-info">No orders yet.</div>
+}
+else
+{
+  <ul class="list-group">
+    @foreach (var o in _orders)
+    {
+      <li class="list-group-item">
+        <a href="@($"/orders/{o.Id}")">@o.CreatedAt.ToLocalTime():g</a>
+        – Total: @($"{o.Total:C}")
+      </li>
+    }
+  </ul>
+}
+
+@code {
+  private bool _loaded;
+  private List<Order> _orders = new();
+
+  protected override async Task OnInitializedAsync()
+  {
+    // 1) check auth
+    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+    if (!(auth.User.Identity?.IsAuthenticated ?? false))
+    {
+      // redirect to login if not
+      Nav.NavigateTo("/login?redirected=orders", true);
+      return;
+    }
+
+    // 2) load orders
+    _orders = await OrderService.GetAllAsync();
+    _loaded = true;
+  }
+}

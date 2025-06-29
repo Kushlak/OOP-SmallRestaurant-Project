@@ -1,0 +1,66 @@
+﻿@* TODO add validaatopn for all fields *@ 
+@page "/dishes/new"
+@page "/dishes/edit/{Id:guid}"
+@inject IDishService        DishService
+@inject NavigationManager   Nav
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>@(IsEdit ? "Editing the dish" : "Adding new dish")</h3>
+
+<EditForm Model="_dish" OnValidSubmit="HandleValidSubmit">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
+  
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <InputText class="form-control" @bind-Value="_dish.Name" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <InputTextArea class="form-control" @bind-Value="_dish.Description" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Price</label>
+    <InputNumber class="form-control" @bind-Value="_dish.Price" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">URL picture</label>
+    <InputText class="form-control" @bind-Value="_dish.ImageUrl" />
+  </div>
+
+  <button type="submit" class="btn btn-primary me-2">
+    @(IsEdit ? "Save" : "Create")
+  </button>
+  <button type="button" class="btn btn-secondary"
+          @onclick='() => Nav.NavigateTo("/dishes")'>
+    Cancel
+  </button>
+</EditForm>
+
+@code {
+  [Parameter] public Guid? Id { get; set; }
+  private Dish _dish = new();
+  private bool IsEdit => Id.HasValue;
+
+  protected override async Task OnInitializedAsync()
+  {
+    if (IsEdit)
+    {
+      var existing = await DishService.GetByIdAsync(Id!.Value);
+      if (existing is null)
+        Nav.NavigateTo("/dishes");
+      else
+        _dish = existing;
+    }
+  }
+
+  private async Task HandleValidSubmit()
+  {
+    if (IsEdit)
+      await DishService.UpdateAsync(_dish);
+    else
+      await DishService.CreateAsync(_dish);
+
+    Nav.NavigateTo("/dishes");
+  }
+}

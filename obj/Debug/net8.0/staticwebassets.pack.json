@@ -1,0 +1,57 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\SmallRestaurant.bundle.scp.css",
+      "PackagePath": "staticwebassets\\SmallRestaurant.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\images\\dishes\\pasta.png",
+      "PackagePath": "staticwebassets\\images\\dishes\\pasta.png"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\images\\dishes\\pierogi.png",
+      "PackagePath": "staticwebassets\\images\\dishes\\pierogi.png"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\images\\dishes\\pizza.png",
+      "PackagePath": "staticwebassets\\images\\dishes\\pizza.png"
+    },
+    {
+      "Id": "D:\\CS\\SmallRestaurant\\SmallRestaurant\\wwwroot\\images\\dishes\\sushi.png",
+      "PackagePath": "staticwebassets\\images\\dishes\\sushi.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.SmallRestaurant.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.SmallRestaurant.props",
+      "PackagePath": "build\\SmallRestaurant.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.SmallRestaurant.props",
+      "PackagePath": "buildMultiTargeting\\SmallRestaurant.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.SmallRestaurant.props",
+      "PackagePath": "buildTransitive\\SmallRestaurant.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

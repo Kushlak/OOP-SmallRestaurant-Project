@@ -1,0 +1,35 @@
+﻿@using SmallRestaurant.Data.Models
+@using SmallRestaurant.Data.Services
+@inject IDishService DishService
+@inject IOrderService OrderService
+
+<div class="card p-4 rounded-2xl shadow-md">
+  <h3 class="text-xl font-semibold">@Dish.Name</h3>
+  <p class="text-sm mb-2">@Dish.Description</p>
+  <p class="font-bold mb-2">@Dish.Price.ToString("C")</p>
+  <button @onclick="AddToCart" class="btn btn-primary">
+    Додати в кошик
+  </button>
+  @if (added)
+  {
+    <div class="text-green-600 mt-2">Додано!</div>
+  }
+</div>
+
+@code {
+  [Parameter] public Dish Dish { get; set; }
+
+  private bool added;
+
+  private async Task AddToCart()
+  {
+    await OrderService.AddToCartAsync(Dish);
+    added = true;
+    // щоб підтвердження пропало через 2 секунди
+    _ = Task.Delay(2000).ContinueWith(_ =>
+    {
+      added = false;
+      InvokeAsync(StateHasChanged);
+    });
+  }
+}

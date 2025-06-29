@@ -1,0 +1,78 @@
+﻿@page "/addresses"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAddressService         AddressService
+@inject AuthenticationStateProvider AuthProv
+@inject NavigationManager       Nav
+
+<h3>Your Addresses</h3>
+
+<AuthorizeView>
+  <Authorized>
+    <button class="btn btn-primary mb-3"
+            @onclick='() => Nav.NavigateTo("/addresses/new")'>
+      Add New Address
+    </button>
+
+    @if (_list is null)
+    {
+      <p><em>Loading…</em></p>
+    }
+    else if (!_list.Any())
+    {
+      <p>No addresses yet.</p>
+    }
+    else
+    {
+      <ul class="list-group">
+        @foreach(var a in _list)
+        {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              @a.Street, @a.City, @a.PostalCode
+              @if(a.IsDefault) { <strong>(Default)</strong> }
+            </span>
+            <div>
+              <button class="btn btn-sm btn-outline-secondary me-1"
+                      @onclick="() => Edit(a.Id)">Edit</button>
+              <button class="btn btn-sm btn-outline-danger me-1"
+                      @onclick="() => Delete(a.Id)">Delete</button>
+              @if (!a.IsDefault)
+              {
+                <button class="btn btn-sm btn-outline-primary"
+                        @onclick="() => MakeDefault(a.Id)">
+                  Set Default
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </Authorized>
+  <NotAuthorized>
+    <p>Please <NavLink href="login">login</NavLink> to manage your addresses.</p>
+  </NotAuthorized>
+</AuthorizeView>
+
+@code {
+  private List<Address>? _list;
+
+  protected override async Task OnInitializedAsync()
+  {
+    var auth = await AuthProv.GetAuthenticationStateAsync();
+    var uid = auth.User.Identity?.Name!;
+    _list = await AddressService.GetForUserAsync(uid);
+  }
+
+  void Edit(Guid id) => Nav.NavigateTo($"/addresses/edit/{id}");
+  async Task Delete(Guid id) {
+    await AddressService.DeleteAsync(id);
+    await OnInitializedAsync();
+  }
+  async Task MakeDefault(Guid id) {
+    var auth = await AuthProv.GetAuthenticationStateAsync();
+    var uid = auth.User.Identity?.Name!;
+    await AddressService.SetDefaultAsync(uid, id);
+    await OnInitializedAsync();
+  }
+}

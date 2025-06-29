@@ -1,0 +1,67 @@
+﻿@page "/register"
+@using System.ComponentModel.DataAnnotations
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<h2>Register</h2>
+
+<EditForm Model="_model" OnValidSubmit="HandleRegister">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
+
+  <div class="mb-3">
+    <label>Username</label>
+    <InputText class="form-control" @bind-Value="_model.UserName" />
+  </div>
+  <div class="mb-3">
+    <label>Password</label>
+    <InputText type="password" class="form-control"
+               @bind-Value="_model.Password" />
+  </div>
+  <div class="mb-3">
+    <label>Confirm Password</label>
+    <InputText type="password" class="form-control"
+               @bind-Value="_model.ConfirmPassword" />
+  </div>
+
+  @if (!string.IsNullOrEmpty(_error))
+  {
+    <div class="alert alert-danger">@_error</div>
+  }
+
+  <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+@code {
+  class RegisterModel
+  {
+    [Required] public string UserName        { get; set; } = "";
+    [Required] public string Password        { get; set; } = "";
+    [Required]
+    [Compare("Password", ErrorMessage = "Passwords must match")]
+    public string ConfirmPassword { get; set; } = "";
+  }
+
+  private RegisterModel _model = new();
+  private string? _error;
+
+  private async Task HandleRegister()
+  {
+    if (_model.Password != _model.ConfirmPassword)
+    {
+      _error = "Паролі не співпадають";
+      return;
+    }
+
+    var ok = await AuthService.RegisterAsync(
+      _model.UserName, _model.Password);
+
+    if (!ok)
+    {
+      _error = "Користувач з таким іменем уже існує";
+      return;
+    }
+
+    Nav.NavigateTo("/");
+  }
+}

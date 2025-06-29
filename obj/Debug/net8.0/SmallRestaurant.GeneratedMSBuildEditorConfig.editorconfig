@@ -1,0 +1,107 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = SmallRestaurant
+build_property.RootNamespace = SmallRestaurant
+build_property.ProjectDir = D:\CS\SmallRestaurant\SmallRestaurant\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\CS\SmallRestaurant\SmallRestaurant
+build_property._RazorSourceGeneratorDebug = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Shared/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = 
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXENvbXBvbmVudHNcTGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+build_metadata.AdditionalFiles.CssScope = b-ijkqn2vlih
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Shared/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = 
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXENvbXBvbmVudHNcTGF5b3V0XE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+build_metadata.AdditionalFiles.CssScope = b-iu6mr1wkam
+
+[D:/CS/SmallRestaurant/SmallRestaurant/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/AddressEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkcmVzc0VkaXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Addresses.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkcmVzc2VzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Cart.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2FydC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/DishDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGlzaERldGFpbHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Dishes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGlzaGVzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/EditDish.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRWRpdERpc2gucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/OrderDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3JkZXJEZXRhaWxzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Orders.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3JkZXJzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Shared/Components/DishCard.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXENvbXBvbmVudHNcRGlzaENhcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 

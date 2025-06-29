@@ -1,0 +1,160 @@
+﻿@page "/cart"
+@using SmallRestaurant.Data.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IOrderService                   OrderService
+@inject IDishService                    DishService
+@inject IAddressService                 AddressService
+@inject AuthenticationStateProvider     AuthProvider
+@inject NavigationManager               Nav
+
+<h2>Your Cart</h2>
+
+@if (!_loaded)
+{
+  <div class="text-center my-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+}
+else if (!_items.Any())
+{
+  <div class="alert alert-info">Your cart is empty.</div>
+}
+else
+{
+  <div class="list-group mb-4">
+    @foreach (var (item, idx) in _items.Select((value, i) => (value, i + 1)))
+    {
+      <div class="list-group-item d-flex align-items-center">
+        <!-- 1) Порядковий номер -->
+        <div class="fw-bold me-3">@idx.</div>
+
+        <!-- 2) Фото страви -->
+        <img src="@GetImageUrl(item.DishId)" alt="@item.DishName"
+             class="rounded me-3"
+             style="width:60px;height:60px;object-fit:cover" />
+
+        <!-- 3) Назва та ціна за одиницю -->
+        <div class="flex-grow-1">
+          <div class="fw-semibold">@item.DishName</div>
+          <div class="text-muted">@item.Price.ToString("C")</div>
+        </div>
+
+        <!-- 4) Контрол кількості -->
+        <div class="mx-3 d-flex align-items-center">
+          <button class="btn btn-sm btn-outline-secondary"
+                  @onclick="() => ChangeQuantity(item.DishId, -1)">–</button>
+          <span class="mx-2">@item.Quantity</span>
+          <button class="btn btn-sm btn-outline-secondary"
+                  @onclick="() => ChangeQuantity(item.DishId, +1)">+</button>
+        </div>
+
+        <!-- 5) Підсумок по рядку -->
+        <div class="mx-3">
+          @(item.Price * item.Quantity).ToString("C")
+        </div>
+
+        <!-- 6) Видалити всі одиниці -->
+        <button class="btn btn-sm btn-danger"
+                @onclick="() => RemoveAll(item.DishId)">
+          Remove
+        </button>
+      </div>
+    }
+  </div>
+
+  @* —————————————— *@
+  @* Блок “Delivery to:” *@
+  <p>
+    <strong>Delivery to:</strong>
+    @if (_defaultAddr is null)
+    {
+      <em>No default address.
+        <NavLink class="link-secondary" href="addresses">Add one</NavLink>.
+      </em>
+    }
+    else
+    {
+      @_defaultAddr.Street;
+    }
+  </p>
+  @* —————————————— *@
+
+  <!-- Підсумок замовлення та кнопка -->
+  <div class="d-flex justify-content-between align-items-center">
+    <h4>Total: @(_total.ToString("C"))</h4>
+    <button class="btn btn-primary" @onclick="PlaceOrder">
+      Place Order
+    </button>
+  </div>
+}
+
+@code {
+  private List<OrderItem> _items       = new();
+  private List<Dish>      _dishes      = new();
+  private Address?        _defaultAddr;
+  private decimal         _total;
+  private bool            _loaded;
+
+  protected override async Task OnInitializedAsync()
+  {
+    // 1) Завантажуємо усі страви для картинок
+    _dishes = await DishService.GetAllAsync();
+
+    // 2) Завантажуємо дефолтну адресу поточного юзера
+    var auth = await AuthProvider.GetAuthenticationStateAsync();
+    var uid  = auth.User.Identity?.Name!;
+    var allAddrs = await AddressService.GetForUserAsync(uid);
+    _defaultAddr = allAddrs.FirstOrDefault(a => a.IsDefault);
+
+    // 3) Завантажуємо кошик
+    await LoadCartAsync();
+  }
+
+  private async Task LoadCartAsync()
+  {
+    _items = await OrderService.GetCartItemsAsync();
+    _total = await OrderService.GetCartTotalAsync();
+    _loaded = true;
+    StateHasChanged();
+  }
+
+  private string GetImageUrl(Guid dishId)
+  {
+    var dish = _dishes.FirstOrDefault(d => d.Id == dishId);
+    return dish?.ImageUrl ?? "https://via.placeholder.com/60";
+  }
+
+  private async Task ChangeQuantity(Guid dishId, int delta)
+  {
+    if (delta > 0)
+      await OrderService.AddToCartAsync(
+        _dishes.First(d => d.Id == dishId)
+      );
+    else
+      await OrderService.RemoveOneFromCartAsync(dishId);
+
+    await LoadCartAsync();
+  }
+
+  private async Task RemoveAll(Guid dishId)
+  {
+    await OrderService.RemoveFromCartAsync(dishId);
+    await LoadCartAsync();
+  }
+
+  private async Task PlaceOrder()
+  {
+    if (_defaultAddr is null)
+    {
+      // Можна додати повідомлення або редирект на сторінку з адресами
+      return;
+    }
+
+    await OrderService.PlaceOrderAsync(_defaultAddr.Id);
+    await OrderService.ClearCartAsync();
+    Nav.NavigateTo("/orders");
+  }
+
+}
