@@ -17,5 +17,8 @@
     Task<Order?> GetByIdAsync(Guid id);
     Task PlaceOrderAsync(Guid? addressId, Guid userId);
     Task<List<Order>> GetByUserIdAsync(Guid userId);
+    Task DeleteAsync(Guid orderId);
+    Task UpdateOrderAsync(Order updatedOrder);
+
   }
 }
