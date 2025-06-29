@@ -66,6 +66,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRWRpdERpc2gucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/CS/SmallRestaurant/SmallRestaurant/Pages/EditOrder.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRWRpdE9yZGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/CS/SmallRestaurant/SmallRestaurant/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

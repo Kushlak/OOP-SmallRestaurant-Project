@@ -1,0 +1,112 @@
+﻿@page "/orders/edit/{Id:guid}"
+@inject IOrderService OrderService
+@inject NavigationManager Nav
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Editing Order</h3>
+
+@if (_order is null)
+{
+  <p>Loading...</p>
+}
+else
+{
+  <EditForm Model="_order" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+      <label class="form-label">Delivery</label>
+      <InputSelect class="form-select" @bind-Value="_order.Delivery">
+        @foreach (var d in Enum.GetValues<DeliveryType>())
+        {
+          <option value="@d">@d</option>
+        }
+      </InputSelect>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Street</label>
+      <InputText class="form-control" @bind-Value="_order.Address.Street" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">City</label>
+      <InputText class="form-control" @bind-Value="_order.Address.City" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Postal Code</label>
+      <InputText class="form-control" @bind-Value="_order.Address.PostalCode" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Status</label>
+      <InputSelect class="form-select" @bind-Value="_order.Status">
+        @foreach (var status in Enum.GetValues<OrderStatus>())
+        {
+          <option value="@status">@status</option>
+        }
+      </InputSelect>
+    </div>
+
+    <h5>Items</h5>
+    @foreach (var item in _order.Items)
+    {
+      <div class="border rounded p-3 mb-3">
+        <div class="mb-2">
+          <label>Dish</label>
+          <InputText class="form-control" @bind-Value="item.DishName" />
+        </div>
+        <div class="mb-2">
+          <label>Qty</label>
+          <InputNumber class="form-control" @bind-Value="item.Quantity" />
+        </div>
+        <div class="mb-2">
+          <label>Price</label>
+          <InputNumber class="form-control" @bind-Value="item.Price" />
+        </div>
+      </div>
+    }
+
+    <button type="submit" class="btn btn-primary me-2">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick='() => Nav.NavigateTo("/orders")'>
+      Cancel
+    </button>
+  </EditForm>
+}
+
+@code {
+  [Parameter] public Guid Id { get; set; }
+  private Order? _order;
+
+  protected override async Task OnInitializedAsync()
+  {
+    _order = await OrderService.GetByIdAsync(Id);
+    if (_order is null)
+    {
+      Nav.NavigateTo("/orders");
+      return;
+    }
+
+    if (_order.Address is null)
+    {
+      _order.Address = new Address();
+    }
+  }
+
+
+  private async Task HandleValidSubmit()
+  {
+    _order!.Total = _order.Items.Sum(i => i.Price * i.Quantity);
+    
+    if (_order!.Delivery == DeliveryType.Pickup)
+    {
+      // Очищаємо адресу, якщо самовивіз
+      _order.Address.Street = "";
+      _order.Address.City = "";
+      _order.Address.PostalCode = "";
+    }
+    
+    await OrderService.UpdateOrderAsync(_order);
+    Nav.NavigateTo("/orders");
+  }
+}

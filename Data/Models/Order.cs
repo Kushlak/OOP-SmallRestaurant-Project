@@ -10,5 +10,7 @@
     public Address? Address { get; set; } = null!;
     public Guid? UserId { get; set; }
     public User? User { get; set; } = null!;
+    public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public DeliveryType Delivery { get; set; }
   }
 }

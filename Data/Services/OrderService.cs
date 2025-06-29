@@ -8,6 +8,20 @@ namespace SmallRestaurant.Data.Services
 {
     public class OrderService : IOrderService
     {
+        public async Task DeleteAsync(Guid orderId)
+        {
+            var order = await _db.Orders
+                .Include(o => o.Items)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order != null)
+            {
+                _db.OrderItems.RemoveRange(order.Items);
+                _db.Orders.Remove(order);
+                await _db.SaveChangesAsync();
+            }
+        }
+        
         private readonly AppDbContext _db;
         // тимчасово тримаємо кошик в пам'яті
         private readonly List<OrderItem> _cart = new();
@@ -108,5 +122,27 @@ namespace SmallRestaurant.Data.Services
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
         }
+        
+        public async Task UpdateOrderAsync(Order updatedOrder)
+        {
+            var existing = await _db.Orders
+                .Include(o => o.Address)
+                .FirstOrDefaultAsync(o => o.Id == updatedOrder.Id);
+
+            if (existing is not null)
+            {
+                existing.Status = updatedOrder.Status;
+
+                if (existing.Address is not null && updatedOrder.Address is not null)
+                {
+                    existing.Address.Street = updatedOrder.Address.Street;
+                    existing.Address.City = updatedOrder.Address.City;
+                    existing.Address.PostalCode = updatedOrder.Address.PostalCode;
+                }
+
+                await _db.SaveChangesAsync();
+            }
+        }
+
     }
 }
