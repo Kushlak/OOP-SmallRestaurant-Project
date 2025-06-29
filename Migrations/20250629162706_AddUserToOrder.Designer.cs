@@ -12,8 +12,8 @@ using SmallRestaurant.Data.Context;
 namespace SmallRestaurant.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250628211632_ChangedOrders")]
-    partial class ChangedOrders
+    [Migration("20250629162706_AddUserToOrder")]
+    partial class AddUserToOrder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -120,7 +120,7 @@ namespace SmallRestaurant.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -190,11 +190,15 @@ namespace SmallRestaurant.Migrations
                         .WithMany()
                         .HasForeignKey("AddressId");
 
-                    b.HasOne("SmallRestaurant.Data.Models.User", null)
+                    b.HasOne("SmallRestaurant.Data.Models.User", "User")
                         .WithMany("Orders")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Address");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SmallRestaurant.Data.Models.OrderItem", b =>

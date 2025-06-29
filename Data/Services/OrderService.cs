@@ -62,13 +62,14 @@ namespace SmallRestaurant.Data.Services
 
         // ——————————————————————————————
         // Тепер — збережені замовлення в БД
-        public async Task PlaceOrderAsync(Guid? addressId)
+        public async Task PlaceOrderAsync(Guid? addressId, Guid userId)
         {
             var order = new Order
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
-                AddressId = addressId ?? Guid.Empty, // обробка null
+                AddressId = addressId, // обробка null
+                UserId = userId,
                 Items = _cart.Select(i => new OrderItem
                 {
                     Id = Guid.NewGuid(),
@@ -97,6 +98,15 @@ namespace SmallRestaurant.Data.Services
                 .Include(o => o.Items)
                 .Include(o => o.Address)
                 .FirstOrDefaultAsync(o => o.Id == id);
-        
+     
+        public Task<List<Order>> GetByUserIdAsync(Guid userId)
+        {
+            return _db.Orders
+                .Where(o => o.UserId == userId)
+                .Include(o => o.Items)
+                .Include(o => o.Address)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

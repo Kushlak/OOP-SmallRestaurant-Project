@@ -187,11 +187,13 @@ namespace SmallRestaurant.Migrations
                         .WithMany()
                         .HasForeignKey("AddressId");
 
-                    b.HasOne("SmallRestaurant.Data.Models.User", null)
+                    b.HasOne("SmallRestaurant.Data.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId");
 
                     b.Navigation("Address");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SmallRestaurant.Data.Models.OrderItem", b =>
