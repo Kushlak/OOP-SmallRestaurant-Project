@@ -1,11 +1,11 @@
 ﻿@page "/cart"
-@using SmallRestaurant.Data.Models
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
-@inject IOrderService                   OrderService
-@inject IDishService                    DishService
-@inject IAddressService                 AddressService
-@inject AuthenticationStateProvider     AuthProvider
-@inject NavigationManager               Nav
+@inject IOrderService OrderService
+@inject IDishService DishService
+@inject IAddressService AddressService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Nav
 
 <h2>Your Cart</h2>
 
@@ -33,7 +33,7 @@ else
         <!-- 2) Фото страви -->
         <img src="@GetImageUrl(item.DishId)" alt="@item.DishName"
              class="rounded me-3"
-             style="width:60px;height:60px;object-fit:cover" />
+             style="width:60px;height:60px;object-fit:cover"/>
 
         <!-- 3) Назва та ціна за одиницю -->
         <div class="flex-grow-1">
@@ -44,10 +44,14 @@ else
         <!-- 4) Контрол кількості -->
         <div class="mx-3 d-flex align-items-center">
           <button class="btn btn-sm btn-outline-secondary"
-                  @onclick="() => ChangeQuantity(item.DishId, -1)">–</button>
+                  @onclick="() => ChangeQuantity(item.DishId, -1)">
+            –
+          </button>
           <span class="mx-2">@item.Quantity</span>
           <button class="btn btn-sm btn-outline-secondary"
-                  @onclick="() => ChangeQuantity(item.DishId, +1)">+</button>
+                  @onclick="() => ChangeQuantity(item.DishId, +1)">
+            +
+          </button>
         </div>
 
         <!-- 5) Підсумок по рядку -->
@@ -65,23 +69,41 @@ else
   </div>
 
   @* —————————————— *@
-  @* Блок “Delivery to:” *@
-  <p>
-    <strong>Delivery to:</strong>
-    @if (_defaultAddr is null)
-    {
-      <em>No default address.
-        <NavLink class="link-secondary" href="addresses">Add one</NavLink>.
-      </em>
-    }
-    else
-    {
-      @_defaultAddr.Street;
-    }
+  @* Блок “Delivery method” *@
+  <p class="mb-2">
+    <strong>Delivery method:</strong>
   </p>
-  @* —————————————— *@
 
-  <!-- Підсумок замовлення та кнопка -->
+  <div class="form-group">
+    <label>Delivery?</label>
+    <InputCheckbox @bind-Value="_isDelivery"/>
+    Yes
+  </div>
+
+  @if (_isDelivery)
+  {
+    <p>
+      <strong>Deliver to:</strong>
+      @if (_defaultAddr is null)
+      {
+        <em>
+          No default address.
+          <NavLink class="link-secondary" href="addresses">Add one</NavLink>.
+        </em>
+      }
+      else
+      {
+        @_defaultAddr.Street
+      }
+    </p>
+  }
+  else if (_isDelivery == false)
+  {
+    <p>
+      <strong>You selected pickup.</strong> Visit our restaurant to get your food.
+    </p>
+  }
+
   <div class="d-flex justify-content-between align-items-center">
     <h4>Total: @(_total.ToString("C"))</h4>
     <button class="btn btn-primary" @onclick="PlaceOrder">
@@ -91,11 +113,18 @@ else
 }
 
 @code {
-  private List<OrderItem> _items       = new();
-  private List<Dish>      _dishes      = new();
-  private Address?        _defaultAddr;
-  private decimal         _total;
-  private bool            _loaded;
+  private List<OrderItem> _items = new();
+  private List<Dish> _dishes = new();
+  private Address? _defaultAddr;
+  private decimal _total;
+  private bool _loaded;
+  private DeliveryMethod _deliveryMethod = DeliveryMethod.Delivery;
+  private bool _isDelivery = false;
+
+  private Dictionary<string, object> GetValueAttr(DeliveryMethod method)
+  {
+    return new Dictionary<string, object> { { "value", method.ToString() } };
+  }
 
   protected override async Task OnInitializedAsync()
   {
@@ -103,8 +132,8 @@ else
     _dishes = await DishService.GetAllAsync();
 
     // 2) Завантажуємо дефолтну адресу поточного юзера
-    var auth = await AuthProvider.GetAuthenticationStateAsync();
-    var uid  = auth.User.Identity?.Name!;
+    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+    var uid = auth.User.Identity?.Name!;
     var allAddrs = await AddressService.GetForUserAsync(uid);
     _defaultAddr = allAddrs.FirstOrDefault(a => a.IsDefault);
 
@@ -146,15 +175,25 @@ else
 
   private async Task PlaceOrder()
   {
-    if (_defaultAddr is null)
+    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+    var user = auth.User;
+    var userIdStr = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+    if (_isDelivery)
     {
-      // Можна додати повідомлення або редирект на сторінку з адресами
-      return;
+      if (_defaultAddr is null)
+        return;
+
+      await OrderService.PlaceOrderAsync(_defaultAddr.Id,  new Guid(userIdStr));
+    }
+    else // Pickup
+    {
+      await OrderService.PlaceOrderAsync(null,  new Guid(userIdStr));
     }
 
-    await OrderService.PlaceOrderAsync(_defaultAddr.Id);
     await OrderService.ClearCartAsync();
     Nav.NavigateTo("/orders");
   }
+
 
 }

@@ -12,8 +12,8 @@ using SmallRestaurant.Data.Context;
 namespace SmallRestaurant.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250628193753_LinkOrderWithAddress")]
-    partial class LinkOrderWithAddress
+    [Migration("20250629163620_MakeUserIdNullableInOrders")]
+    partial class MakeUserIdNullableInOrders
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,7 +111,7 @@ namespace SmallRestaurant.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AddressId")
+                    b.Property<Guid?>("AddressId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -188,15 +188,15 @@ namespace SmallRestaurant.Migrations
                 {
                     b.HasOne("SmallRestaurant.Data.Models.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AddressId");
 
-                    b.HasOne("SmallRestaurant.Data.Models.User", null)
+                    b.HasOne("SmallRestaurant.Data.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId");
 
                     b.Navigation("Address");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SmallRestaurant.Data.Models.OrderItem", b =>

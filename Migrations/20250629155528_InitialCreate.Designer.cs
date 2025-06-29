@@ -12,8 +12,8 @@ using SmallRestaurant.Data.Context;
 namespace SmallRestaurant.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250628194017_MakeOrderAddressNullable")]
-    partial class MakeOrderAddressNullable
+    [Migration("20250629155528_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

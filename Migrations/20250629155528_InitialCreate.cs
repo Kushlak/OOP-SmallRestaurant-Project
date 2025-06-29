@@ -5,7 +5,7 @@
 namespace SmallRestaurant.Migrations
 {
     /// <inheritdoc />
-    public partial class MakeOrderAddressNotNullablesecond : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

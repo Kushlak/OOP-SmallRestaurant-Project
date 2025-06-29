@@ -24,10 +24,12 @@ namespace SmallRestaurant.Data.Services
       if (stored.Success && !string.IsNullOrEmpty(stored.Value))
       {
         var parts = stored.Value.Split('|');
+        var user = await _users.GetByUserNameAsync(parts[0])!;
         var idt = new ClaimsIdentity(new[]
         {
           new Claim(ClaimTypes.Name, parts[0]),
-          new Claim(ClaimTypes.Role, parts[1])
+          new Claim(ClaimTypes.Role, parts[1]),
+          new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         }, "custom");
         return new AuthenticationState(new ClaimsPrincipal(idt));
       }
