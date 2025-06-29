@@ -2,10 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmallRestaurant.Data.Context;
 using SmallRestaurant.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace SmallRestaurant.Data.Services
 {
@@ -65,13 +62,13 @@ namespace SmallRestaurant.Data.Services
 
         // ——————————————————————————————
         // Тепер — збережені замовлення в БД
-        public async Task PlaceOrderAsync(Guid addressId)
+        public async Task PlaceOrderAsync(Guid? addressId)
         {
             var order = new Order
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
-                AddressId = addressId,
+                AddressId = addressId ?? Guid.Empty, // обробка null
                 Items = _cart.Select(i => new OrderItem
                 {
                     Id = Guid.NewGuid(),
@@ -85,7 +82,6 @@ namespace SmallRestaurant.Data.Services
 
             _db.Orders.Add(order);
             await _db.SaveChangesAsync();
-
             _cart.Clear();
         }
 
@@ -101,6 +97,6 @@ namespace SmallRestaurant.Data.Services
                 .Include(o => o.Items)
                 .Include(o => o.Address)
                 .FirstOrDefaultAsync(o => o.Id == id);
-
+        
     }
 }

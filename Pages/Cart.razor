@@ -1,5 +1,4 @@
 ﻿@page "/cart"
-@using SmallRestaurant.Data.Models
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IOrderService                   OrderService
 @inject IDishService                    DishService
@@ -65,20 +64,58 @@ else
   </div>
 
   @* —————————————— *@
-  @* Блок “Delivery to:” *@
-  <p>
-    <strong>Delivery to:</strong>
-    @if (_defaultAddr is null)
-    {
-      <em>No default address.
-        <NavLink class="link-secondary" href="addresses">Add one</NavLink>.
-      </em>
-    }
-    else
-    {
-      @_defaultAddr.Street;
-    }
+  @* Блок “Delivery method” *@
+  <p class="mb-2">
+    <strong>Delivery method:</strong>
   </p>
+
+  <div class="form-check">
+    <input type="radio"
+           class="form-check-input"
+           name="deliveryMethod"
+           checked="@(_deliveryMethod = DeliveryMethod.Delivery)"
+   />
+    <label class="form-check-label" for="delivery">
+      Delivery
+    </label>
+  </div>
+
+  <div class="form-check mb-3">
+    <input type="radio"
+           class="form-check-input"
+           name="deliveryMethod"
+           checked="@(_deliveryMethod = DeliveryMethod.Pickup)"
+           />
+    <label class="form-check-label" for="pickup">
+      Pickup (self-service)
+    </label>
+  </div>
+
+
+
+  @if (_deliveryMethod == DeliveryMethod.Delivery)
+  {
+    <p>
+      <strong>Deliver to:</strong>
+      @if (_defaultAddr is null)
+      {
+        <em>No default address.
+          <NavLink class="link-secondary" href="addresses">Add one</NavLink>.
+        </em>
+      }
+      else
+      {
+        @_defaultAddr.Street
+      }
+    </p>
+  }
+  else if (_deliveryMethod == DeliveryMethod.Pickup)
+  {
+    <p>
+      <strong>You selected pickup.</strong> Visit our restaurant to get your food.
+    </p>
+  }
+
   @* —————————————— *@
 
   <!-- Підсумок замовлення та кнопка -->
@@ -96,7 +133,13 @@ else
   private Address?        _defaultAddr;
   private decimal         _total;
   private bool            _loaded;
-
+  private DeliveryMethod _deliveryMethod = DeliveryMethod.Delivery;
+  
+  private Dictionary<string, object> GetValueAttr(DeliveryMethod method)
+  {
+    return new Dictionary<string, object> { { "value", method.ToString() } };
+  }
+  
   protected override async Task OnInitializedAsync()
   {
     // 1) Завантажуємо усі страви для картинок
@@ -146,15 +189,23 @@ else
 
   private async Task PlaceOrder()
   {
-    if (_defaultAddr is null)
+    Console.WriteLine(_deliveryMethod);
+    if (_deliveryMethod == DeliveryMethod.Delivery)
     {
-      // Можна додати повідомлення або редирект на сторінку з адресами
-      return;
+      if (_defaultAddr is null)
+        return;
+
+      await OrderService.PlaceOrderAsync(_defaultAddr.Id);
+    }
+    else // Pickup
+    {
+      await OrderService.PlaceOrderAsync(null);
     }
 
-    await OrderService.PlaceOrderAsync(_defaultAddr.Id);
     await OrderService.ClearCartAsync();
     Nav.NavigateTo("/orders");
   }
+
+
 
 }

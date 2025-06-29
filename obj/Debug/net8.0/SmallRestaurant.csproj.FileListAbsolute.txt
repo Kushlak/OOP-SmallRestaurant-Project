@@ -178,6 +178,7 @@ D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\SmallRestaurant.csproj.Co
 D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\SmallRestaurant.MvcApplicationPartsAssemblyInfo.cache
 D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\SmallRestaurant.RazorAssemblyInfo.cache
 D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\SmallRestaurant.RazorAssemblyInfo.cs
+D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\SmallRestaurant.sourcelink.json
 D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\staticwebassets.build.json
 D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\staticwebassets.development.json
 D:\CS\SmallRestaurant\SmallRestaurant\obj\Debug\net8.0\staticwebassets\msbuild.SmallRestaurant.Microsoft.AspNetCore.StaticWebAssets.props

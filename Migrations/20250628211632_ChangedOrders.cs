@@ -21,6 +21,7 @@ namespace SmallRestaurant.Migrations
                 type: "uuid",
                 nullable: true,
                 oldClrType: typeof(Guid),
+                defaultValue: null,
                 oldType: "uuid");
 
             migrationBuilder.AddForeignKey(
@@ -42,8 +43,8 @@ namespace SmallRestaurant.Migrations
                 name: "AddressId",
                 table: "Orders",
                 type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
+                nullable: true,
+                defaultValue: null,
                 oldClrType: typeof(Guid),
                 oldType: "uuid",
                 oldNullable: true);

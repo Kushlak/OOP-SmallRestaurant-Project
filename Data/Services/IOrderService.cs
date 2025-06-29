@@ -15,6 +15,6 @@
     Task<decimal> GetCartTotalAsync();
     Task<List<Order>> GetAllAsync();
     Task<Order?> GetByIdAsync(Guid id);
-    Task PlaceOrderAsync(Guid addressId);
+    Task PlaceOrderAsync(Guid? addressId);
   }
 }
