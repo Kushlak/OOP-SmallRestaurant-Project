@@ -11,5 +11,6 @@ namespace SmallRestaurant.Data.Models
 
     // ← Додано для посилання на картинку в wwwroot/images/dishes
     public string? ImageUrl { get; set; }
+    public List<Comment> Comments { get; set; } = new();
   }
 }

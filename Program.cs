@@ -28,6 +28,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IDishService,  DishService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

@@ -1,32 +1,131 @@
 ﻿@page "/dishes/{Id:guid}"
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 
-@inject IDishService         DishService
-@inject IOrderService        OrderService
-@inject NavigationManager    Nav
-@inject IJSRuntime           JSRuntime
+@inject IDishService DishService
+@inject IOrderService OrderService
+@inject NavigationManager Nav
+@inject IJSRuntime JSRuntime
+@inject ICommentService CommentService
+@inject AuthenticationStateProvider AuthProvider
 
-[CascadingAuthenticationState]
-<h2>@_dish?.Name</h2>
-<p>@_dish?.Description</p>
-<p class="fw-bold">@_dish?.Price.ToString("C")</p>
+<div class="row">
+  <!-- Left column: Dish info -->
+  <div class="col-md-6">
+    <h2>@_dish?.Name</h2>
+    <p>@_dish?.Description</p>
+    <p class="fw-bold">@_dish?.Price.ToString("C")</p>
 
-<button class="btn btn-success me-2" @onclick="AddToCart">Add to Cart</button>
-<button class="btn btn-secondary" @onclick="GoBack">Back to Menu</button>
+    <button class="btn btn-success me-2" @onclick="AddToCart">Add to Cart</button>
+    <button class="btn btn-secondary" @onclick="GoBack">Back to Menu</button>
+  </div>
+
+  <!-- Right column: Comments section -->
+  <div class="col-md-6">
+    @if (!HasUserCommented)
+    {
+      <h4 class="mb-3">Add your comment</h4>
+      <EditForm Model="_newComment" OnValidSubmit="SubmitComment">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-2">
+          <label class="form-label">Rating (1–5)</label>
+          <InputNumber @bind-Value="_newComment.Rating" class="form-control" min="1" max="5" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Comment</label>
+          <InputTextArea @bind-Value="_newComment.Text" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Comment</button>
+      </EditForm>
+    }
+    else
+    {
+      <div class="alert alert-info">You have already submitted a comment for this dish.</div>
+    }
+
+    <h4 class="mt-4">Comments</h4>
+    <div style="max-height: 300px; overflow-y: auto;" class="border rounded p-2 bg-light">
+      @if (_comments is { Count: > 0 })
+      {
+        @foreach (var c in _comments.OrderByDescending(c => c.CreatedAt))
+        {
+          <div class="border-bottom pb-2 mb-2" style="word-break: break-word; max-width: 100%;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>@c.User.UserName</strong> — @c.Rating ★
+              </div>
+              <small class="text-muted">@c.CreatedAt.ToString("dd.MM.yyyy, HH:mm")</small>
+            </div>
+
+            @if (EditingComment?.Id == c.Id)
+            {
+              <EditForm Model="EditingComment" OnValidSubmit="SubmitEdit">
+                <div class="mb-2">
+                  <label class="form-label">Rating (1–5)</label>
+                  <InputNumber @bind-Value="EditingComment.Rating" class="form-control" min="1" max="5" />
+                </div>
+                <InputTextArea @bind-Value="EditingComment.Text" class="form-control mb-2" />
+                <button type="submit" class="btn btn-sm btn-success me-2">Save</button>
+                <button type="button" class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+              </EditForm>
+            }
+            else
+            {
+              <div style="white-space: pre-wrap;">@c.Text</div>
+
+              <div class="mt-1 d-flex gap-2">
+                @if (IsAdmin)
+                {
+                  <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteComment(c.Id)">Delete</button>
+                }
+                @if (c.UserId == CurrentUserId)
+                {
+                  <button class="btn btn-sm btn-outline-primary" @onclick="() => StartEditing(c)">Edit</button>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+      else
+      {
+        <p class="text-muted">No comments yet.</p>
+      }
+    </div>
+  </div>
+</div>
 
 @code {
-  [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; }
-  [Parameter]           public Guid Id { get; set; }
-  private Dish?         _dish;
+  [Parameter] public Guid Id { get; set; }
+  private Dish? _dish;
+  private List<Comment>? _comments;
+  private Comment _newComment = new() { Rating = 5, Text = "" };
+
+  private Guid CurrentUserId;
+  private bool IsAdmin;
+  private bool HasUserCommented = false;
+  private Comment? EditingComment;
 
   protected override async Task OnInitializedAsync()
   {
     _dish = await DishService.GetByIdAsync(Id);
+    _comments = await CommentService.GetByDishIdAsync(Id);
+
+    var auth = await AuthProvider.GetAuthenticationStateAsync();
+    var user = auth.User;
+
+    if (Guid.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
+      CurrentUserId = userId;
+
+    IsAdmin = user.IsInRole("Admin");
+    HasUserCommented = _comments.Any(c => c.UserId == CurrentUserId);
   }
 
   private async Task AddToCart()
   {
-    var auth = await AuthStateTask;
+    var auth = await AuthProvider.GetAuthenticationStateAsync();
     if (!auth.User.Identity?.IsAuthenticated ?? true)
     {
       Nav.NavigateTo("/login?redirected=dishes", true);
@@ -35,6 +134,54 @@
 
     await OrderService.AddToCartAsync(_dish!);
     await JSRuntime.InvokeVoidAsync("alert", $"{_dish!.Name} added to cart!");
+  }
+
+  private async Task SubmitComment()
+  {
+    var auth = await AuthProvider.GetAuthenticationStateAsync();
+    var user = auth.User;
+
+    if (!Guid.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
+      return;
+
+    _newComment.UserId = userId;
+    _newComment.DishId = Id;
+    _newComment.CreatedAt = DateTime.UtcNow;
+
+    await CommentService.AddCommentAsync(_newComment);
+    _comments = await CommentService.GetByDishIdAsync(Id);
+    _newComment = new() { Rating = 5, Text = "" };
+    HasUserCommented = true;
+  }
+
+  private void StartEditing(Comment comment)
+  {
+    EditingComment = new Comment
+    {
+      Id = comment.Id,
+      Text = comment.Text,
+      Rating = comment.Rating,
+      DishId = comment.DishId,
+      UserId = comment.UserId
+    };
+  }
+
+  private void CancelEdit() => EditingComment = null;
+
+  private async Task SubmitEdit()
+  {
+    if (EditingComment is null) return;
+
+    await CommentService.UpdateCommentAsync(EditingComment);
+    _comments = await CommentService.GetByDishIdAsync(Id);
+    EditingComment = null;
+  }
+
+  private async Task DeleteComment(Guid commentId)
+  {
+    await CommentService.DeleteCommentAsync(commentId);
+    _comments = await CommentService.GetByDishIdAsync(Id);
+    HasUserCommented = _comments.Any(c => c.UserId == CurrentUserId);
   }
 
   private void GoBack() => Nav.NavigateTo("/dishes");
