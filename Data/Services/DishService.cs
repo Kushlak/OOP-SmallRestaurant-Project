@@ -32,9 +32,12 @@ namespace SmallRestaurant.Data.Services
 
     public async Task DeleteAsync(Guid id)
     {
-      var d = await _db.Dishes.FindAsync(id);
-      if (d != null) { _db.Dishes.Remove(d); await _db.SaveChangesAsync(); }
+      var dish = await _db.Dishes.FindAsync(id);
+      if (dish != null)
+      {
+        _db.Dishes.Remove(dish);
+        await _db.SaveChangesAsync();
+      }
     }
   }
-
 }
