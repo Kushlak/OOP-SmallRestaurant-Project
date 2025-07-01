@@ -1,13 +1,15 @@
-﻿using System;
+﻿using SmallRestaurant.Data.Models;
 
-namespace SmallRestaurant.Data.Models
+public class Comment
 {
-  public class Comment
-  {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid DishId { get; set; }        // FK
-    public string UserName { get; set; }
-    public string Text { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-  }
+  public Guid Id { get; set; }
+  public string Text { get; set; } = null!;
+  public int Rating { get; set; } // 1–5
+  public DateTime CreatedAt { get; set; }
+
+  public Guid DishId { get; set; }
+  public Dish Dish { get; set; } = null!;
+
+  public Guid UserId { get; set; }
+  public User User { get; set; } = null!;
 }
