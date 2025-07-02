@@ -76,7 +76,7 @@ namespace SmallRestaurant.Data.Services
 
         // ——————————————————————————————
         // Тепер — збережені замовлення в БД
-        public async Task PlaceOrderAsync(Guid? addressId, Guid userId)
+        public async Task PlaceOrderAsync(Guid? addressId, Guid userId,decimal totalPrice)
         {
             var order = new Order
             {
@@ -84,6 +84,7 @@ namespace SmallRestaurant.Data.Services
                 CreatedAt = DateTime.UtcNow,
                 AddressId = addressId, // обробка null
                 UserId = userId,
+                Delivery = addressId != null  ?  Models.DeliveryType.Courier : Models.DeliveryType.Pickup,
                 Items = _cart.Select(i => new OrderItem
                 {
                     Id = Guid.NewGuid(),
@@ -93,7 +94,7 @@ namespace SmallRestaurant.Data.Services
                     Quantity = i.Quantity
                 }).ToList()
             };
-            order.Total = order.Items.Sum(i => i.Price * i.Quantity);
+            order.Total = totalPrice;
 
             _db.Orders.Add(order);
             await _db.SaveChangesAsync();

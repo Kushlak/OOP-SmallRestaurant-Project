@@ -15,7 +15,7 @@
     Task<decimal> GetCartTotalAsync();
     Task<List<Order>> GetAllAsync();
     Task<Order?> GetByIdAsync(Guid id);
-    Task PlaceOrderAsync(Guid? addressId, Guid userId);
+    Task PlaceOrderAsync(Guid? addressId, Guid userId,Decimal totalPrice);
     Task<List<Order>> GetByUserIdAsync(Guid userId);
     Task DeleteAsync(Guid orderId);
     Task UpdateOrderAsync(Order updatedOrder);
