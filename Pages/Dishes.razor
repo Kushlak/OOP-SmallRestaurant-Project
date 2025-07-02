@@ -1,5 +1,6 @@
 ﻿@page "/dishes"
 @using System.Globalization
+@using System.Text.RegularExpressions
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IDishService DishService
 @inject IOrderService OrderService
@@ -105,14 +106,29 @@ else
     _dishes = await DishService.GetAllAsync();
   }
 
-  private IEnumerable<Dish> FilteredDishes => (_dishes ?? Enumerable.Empty<Dish>())
-    .Where(d =>
-      (string.IsNullOrWhiteSpace(_searchTerm)
-        || d.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
-        || d.Description.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase))
-      && (!_minPrice.HasValue || d.Price >= _minPrice.Value)
-      && (!_maxPrice.HasValue || d.Price <= _maxPrice.Value)
-    );
+  private IEnumerable<Dish> FilteredDishes
+  {
+    get
+    {
+      if (_dishes == null)
+        return Enumerable.Empty<Dish>();
+
+      try
+      {
+        return _dishes.Where(d =>
+          (string.IsNullOrWhiteSpace(_searchTerm)
+           || Regex.IsMatch(d.Name, _searchTerm, RegexOptions.IgnoreCase)
+           || Regex.IsMatch(d.Description, _searchTerm, RegexOptions.IgnoreCase))
+          && (!_minPrice.HasValue || d.Price >= _minPrice.Value)
+          && (!_maxPrice.HasValue || d.Price <= _maxPrice.Value)
+        );
+      }
+      catch (ArgumentException)
+      {
+        return Enumerable.Empty<Dish>(); // некоректний regex → пустий список
+      }
+    }
+  }
 
   private void ClearFilters()
   {
@@ -121,8 +137,8 @@ else
     _maxPrice = null;
   }
 
-  private void GoToDetails(Guid id)
-    => Nav.NavigateTo($"/dishes/{id}");
+  private void GoToDetails(Guid id) =>
+    Nav.NavigateTo($"/dishes/{id}");
 
   private async Task AddToCart(Dish dish)
   {
