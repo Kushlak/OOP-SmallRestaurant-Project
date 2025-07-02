@@ -95,6 +95,7 @@ else
       {
         @_defaultAddr.Street
       }
+      <div class="text-muted">Delivery price: @DeliveryHelper.GetPrice(DeliveryType.Courier).ToString("C")</div>
     </p>
   }
   else if (_isDelivery == false)
@@ -105,7 +106,7 @@ else
   }
 
   <div class="d-flex justify-content-between align-items-center">
-    <h4>Total: @(_total.ToString("C"))</h4>
+    <h4>Total: @(_displayTotal.ToString("C"))</h4>
     <button class="btn btn-primary" @onclick="PlaceOrder">
       Place Order
     </button>
@@ -120,6 +121,7 @@ else
   private bool _loaded;
   private DeliveryMethod _deliveryMethod = DeliveryMethod.Delivery;
   private bool _isDelivery = false;
+  private decimal _displayTotal => _total + (_isDelivery ? DeliveryHelper.GetPrice(DeliveryType.Courier) : 0);
 
   private Dictionary<string, object> GetValueAttr(DeliveryMethod method)
   {
@@ -128,23 +130,22 @@ else
 
   protected override async Task OnInitializedAsync()
   {
-    // 1) Завантажуємо усі страви для картинок
     _dishes = await DishService.GetAllAsync();
 
-    // 2) Завантажуємо дефолтну адресу поточного юзера
     var auth = await AuthStateProvider.GetAuthenticationStateAsync();
     var uid = auth.User.Identity?.Name!;
     var allAddrs = await AddressService.GetForUserAsync(uid);
     _defaultAddr = allAddrs.FirstOrDefault(a => a.IsDefault);
 
-    // 3) Завантажуємо кошик
     await LoadCartAsync();
   }
 
   private async Task LoadCartAsync()
   {
     _items = await OrderService.GetCartItemsAsync();
-    _total = await OrderService.GetCartTotalAsync();
+    var baseTotal = await OrderService.GetCartTotalAsync();
+    var deliveryFee = _isDelivery ? DeliveryHelper.GetPrice(DeliveryType.Courier) : 0;
+    _total = baseTotal + deliveryFee;
     _loaded = true;
     StateHasChanged();
   }
@@ -184,16 +185,14 @@ else
       if (_defaultAddr is null)
         return;
 
-      await OrderService.PlaceOrderAsync(_defaultAddr.Id,  new Guid(userIdStr));
+      await OrderService.PlaceOrderAsync(_defaultAddr.Id,  new Guid(userIdStr), _displayTotal);
     }
     else // Pickup
     {
-      await OrderService.PlaceOrderAsync(null,  new Guid(userIdStr));
+      await OrderService.PlaceOrderAsync(null,  new Guid(userIdStr), _displayTotal);
     }
 
     await OrderService.ClearCartAsync();
     Nav.NavigateTo("/orders");
   }
-
-
 }

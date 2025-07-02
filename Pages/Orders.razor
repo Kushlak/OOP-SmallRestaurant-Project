@@ -6,7 +6,6 @@
 @inject NavigationManager           Nav
 @inject IJSRuntime JS
 
-
 <h2>Your Orders</h2>
 
 @if (!_loaded)
@@ -23,13 +22,14 @@ else
     @foreach (var o in _orders)
     {
       <li class="list-group-item">
-        <a href="@($"/orders/{o.Id}")">@o.CreatedAt.ToLocalTime():g</a>
-        – Total: @($"{o.Total:C}")
+        <a href="@($"/orders/{o.Id}")">@o.CreatedAt.ToLocalTime():g</a><br />
+        <span>Delivery: <strong>@o.Delivery</strong> (@DeliveryHelper.GetPrice(o.Delivery):C)</span><br />
+        <span>Total: <strong>@($"{o.Total:C}")</strong></span>
       </li>
-      
+
       @if (_isAdmin)
       {
-        <div>
+        <div class="mt-2">
           <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => EditOrder(o.Id)">Edit</button>
           <button class="btn btn-sm btn-danger" @onclick="() => DeleteOrder(o.Id)">Delete</button>
         </div>
@@ -59,10 +59,8 @@ else
     }
   }
 
-
   protected override async Task OnInitializedAsync()
   {
-    
     var auth = await AuthStateProvider.GetAuthenticationStateAsync();
     var user = auth.User;
 
@@ -75,8 +73,8 @@ else
     var role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
     var userIdStr = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
     Console.WriteLine($"[Auth] NameIdentifier: {userIdStr}");
-    
-    _isAdmin = role == "Admin"; // або назва ролі, яку ти використовуєш
+
+    _isAdmin = role == "Admin";
 
     if (role == "User" && Guid.TryParse(userIdStr, out var userId))
     {
@@ -89,5 +87,4 @@ else
 
     _loaded = true;
   }
-
 }

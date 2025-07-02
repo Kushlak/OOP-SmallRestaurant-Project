@@ -11,6 +11,22 @@
     public Guid? UserId { get; set; }
     public User? User { get; set; } = null!;
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
-    public DeliveryType Delivery { get; set; }
+    public DeliveryType Delivery { get; set; } = DeliveryType.Pickup;
+  }
+
+  public enum DeliveryType
+  {
+    Pickup = 0,     // 0 zł
+    Courier = 1     // 10 zł
+  }
+
+  public static class DeliveryHelper
+  {
+    public static decimal GetPrice(DeliveryType type) => type switch
+    {
+      DeliveryType.Pickup => 0,
+      DeliveryType.Courier => 10,
+      _ => 0
+    };
   }
 }
