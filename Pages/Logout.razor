@@ -14,7 +14,6 @@
   private async Task HandleLogout()
   {
     await AuthService.LogoutAsync();
-    // Повернути на головну після логауту
     Nav.NavigateTo("/", forceLoad: true);
   }
 }

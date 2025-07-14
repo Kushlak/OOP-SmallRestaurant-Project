@@ -35,7 +35,7 @@
   <div class="mb-4">
     <button class="btn btn-primary"
             @onclick='() => Nav.NavigateTo("/dishes/new")'>
-      Додати страву
+      Add dish
     </button>
   </div>
 </AuthorizeView>
@@ -125,7 +125,7 @@ else
       }
       catch (ArgumentException)
       {
-        return Enumerable.Empty<Dish>(); // некоректний regex → пустий список
+        return Enumerable.Empty<Dish>(); 
       }
     }
   }

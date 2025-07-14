@@ -1,5 +1,4 @@
-﻿// OrderService.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SmallRestaurant.Data.Context;
 using SmallRestaurant.Data.Models;
 
@@ -23,7 +22,6 @@ namespace SmallRestaurant.Data.Services
         }
         
         private readonly AppDbContext _db;
-        // тимчасово тримаємо кошик в пам'яті
         private readonly List<OrderItem> _cart = new();
 
         public OrderService(AppDbContext db) => _db = db;
@@ -74,15 +72,13 @@ namespace SmallRestaurant.Data.Services
             => Task.FromResult(_cart.Sum(i => i.Price * i.Quantity));
 
 
-        // ——————————————————————————————
-        // Тепер — збережені замовлення в БД
         public async Task PlaceOrderAsync(Guid? addressId, Guid userId,decimal totalPrice)
         {
             var order = new Order
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
-                AddressId = addressId, // обробка null
+                AddressId = addressId, 
                 UserId = userId,
                 Delivery = addressId != null  ?  Models.DeliveryType.Courier : Models.DeliveryType.Pickup,
                 Items = _cart.Select(i => new OrderItem

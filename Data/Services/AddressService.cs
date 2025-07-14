@@ -21,7 +21,6 @@ public class AddressService : IAddressService
 
   public async Task CreateAsync(Address address)
   {
-    // якщо нова адреса має IsDefault, скасовуємо дефолтність в інших
     if (address.IsDefault)
     {
       var others = await _db.Addresses

@@ -8,11 +8,11 @@
   <p class="text-sm mb-2">@Dish.Description</p>
   <p class="font-bold mb-2">@Dish.Price.ToString("C")</p>
   <button @onclick="AddToCart" class="btn btn-primary">
-    Додати в кошик
+    Add to the cart
   </button>
   @if (added)
   {
-    <div class="text-green-600 mt-2">Додано!</div>
+    <div class="text-green-600 mt-2">Added!</div>
   }
 </div>
 
@@ -25,7 +25,6 @@
   {
     await OrderService.AddToCartAsync(Dish);
     added = true;
-    // щоб підтвердження пропало через 2 секунди
     _ = Task.Delay(2000).ContinueWith(_ =>
     {
       added = false;

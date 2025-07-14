@@ -1,7 +1,6 @@
 ﻿version: "3.8"
 
 services:
-  # PostgreSQL
   db:
     image: postgres:14
     restart: unless-stopped
@@ -14,7 +13,6 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  # pgAdmin
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: test
@@ -26,7 +24,6 @@ services:
     depends_on:
       - db
 
-  # Ваш Blazor-додаток
   web:
     build:
       context: .
@@ -35,7 +32,6 @@ services:
     depends_on:
       - db
     environment:
-      # рядок підключення до БД
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=smallrestaurant;Username=smalluser;Password=smallpass"
       ASPNETCORE_URLS: "http://+:80"
       ASPNETCORE_ENVIRONMENT: "Development"

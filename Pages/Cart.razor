@@ -27,21 +27,17 @@ else
     @foreach (var (item, idx) in _items.Select((value, i) => (value, i + 1)))
     {
       <div class="list-group-item d-flex align-items-center">
-        <!-- 1) Порядковий номер -->
         <div class="fw-bold me-3">@idx.</div>
 
-        <!-- 2) Фото страви -->
         <img src="@GetImageUrl(item.DishId)" alt="@item.DishName"
              class="rounded me-3"
              style="width:60px;height:60px;object-fit:cover"/>
 
-        <!-- 3) Назва та ціна за одиницю -->
         <div class="flex-grow-1">
           <div class="fw-semibold">@item.DishName</div>
           <div class="text-muted">@item.Price.ToString("C")</div>
         </div>
 
-        <!-- 4) Контрол кількості -->
         <div class="mx-3 d-flex align-items-center">
           <button class="btn btn-sm btn-outline-secondary"
                   @onclick="() => ChangeQuantity(item.DishId, -1)">
@@ -54,12 +50,10 @@ else
           </button>
         </div>
 
-        <!-- 5) Підсумок по рядку -->
         <div class="mx-3">
           @(item.Price * item.Quantity).ToString("C")
         </div>
 
-        <!-- 6) Видалити всі одиниці -->
         <button class="btn btn-sm btn-danger"
                 @onclick="() => RemoveAll(item.DishId)">
           Remove
@@ -68,8 +62,6 @@ else
     }
   </div>
 
-  @* —————————————— *@
-  @* Блок “Delivery method” *@
   <p class="mb-2">
     <strong>Delivery method:</strong>
   </p>
@@ -187,7 +179,7 @@ else
 
       await OrderService.PlaceOrderAsync(_defaultAddr.Id,  new Guid(userIdStr), _displayTotal);
     }
-    else // Pickup
+    else
     {
       await OrderService.PlaceOrderAsync(null,  new Guid(userIdStr), _displayTotal);
     }

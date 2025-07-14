@@ -4,7 +4,7 @@ public class Comment
 {
   public Guid Id { get; set; }
   public string Text { get; set; } = null!;
-  public int Rating { get; set; } // 1–5
+  public int Rating { get; set; } 
   public DateTime CreatedAt { get; set; }
 
   public Guid DishId { get; set; }

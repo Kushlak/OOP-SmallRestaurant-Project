@@ -8,10 +8,7 @@
 <h3>@(IsEdit ? "Edit Address" : "New Address")</h3>
 
 <EditForm Model="model" OnValidSubmit="Save">
-  <DataAnnotationsValidator />
-  <ValidationSummary />
 
-  <!-- Поля вводу -->
   <InputText @bind-Value="model.Street"
              placeholder="Street"
              class="form-control mb-2" />
@@ -30,7 +27,6 @@
     <label class="form-check-label">Default address</label>
   </div>
 
-  <!-- кнопки збереження/скасування -->
   <button type="submit" class="btn btn-primary me-2">Save</button>
   <button type="button" class="btn btn-secondary"
           @onclick='() => Nav.NavigateTo("/addresses")'>
@@ -45,7 +41,6 @@
 
   protected override async Task OnInitializedAsync()
   {
-    // Спочатку отримуємо поточного користувача
     var auth = await AuthProv.GetAuthenticationStateAsync();
     model.UserId = auth.User.Identity?.Name!;
 
@@ -55,7 +50,6 @@
       if (existing != null)
       {
         model = existing;
-        // UserId уже встановлений із БД
       }
       else
       {

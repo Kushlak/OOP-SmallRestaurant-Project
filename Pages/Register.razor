@@ -49,7 +49,7 @@
   {
     if (_model.Password != _model.ConfirmPassword)
     {
-      _error = "Паролі не співпадають";
+      _error = "No match between passwords";
       return;
     }
 
@@ -58,7 +58,7 @@
 
     if (!ok)
     {
-      _error = "Користувач з таким іменем уже існує";
+      _error = "User with such name already exist";
       return;
     }
 

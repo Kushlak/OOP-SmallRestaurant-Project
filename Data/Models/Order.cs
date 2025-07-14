@@ -16,8 +16,8 @@
 
   public enum DeliveryType
   {
-    Pickup = 0,     // 0 zł
-    Courier = 1     // 10 zł
+    Pickup = 0,     
+    Courier = 1     
   }
 
   public static class DeliveryHelper

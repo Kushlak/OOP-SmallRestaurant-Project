@@ -41,7 +41,6 @@ namespace SmallRestaurant.Data.Services
       var ok = await _users.RegisterAsync(userName, password);
       if (!ok) return false;
 
-      // після успішної реєстрації — автологін
       var user = await _users.GetByUserNameAsync(userName)!;
       await _session.SetAsync(SessionKey, $"{user.UserName}|{user.Role}");
       NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
